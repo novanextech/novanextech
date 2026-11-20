@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#172b27">
+<title>Loners & Introverts — Community Check-in</title>
+<style>
+:root{--bg:#f3f5f1;--card:#fff;--ink:#1d2b27;--muted:#65736d;--accent:#245b4b;--soft:#e7f0eb;--line:#e1e8e3}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(150deg,#edf3ee,#f7f4ed);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink);min-height:100vh;display:grid;place-items:center;padding:22px}
+main{width:min(100%,650px)}.brand{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:800;margin:0 0 12px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:clamp(24px,5vw,42px);box-shadow:0 18px 55px #20382c12}
+h1{font-size:clamp(29px,6vw,42px);line-height:1.12;margin:0 0 14px;letter-spacing:-.04em}
+h2{font-size:clamp(23px,4vw,30px);line-height:1.2;margin:0 0 13px;letter-spacing:-.025em}
+p{margin:0 0 16px}.muted{color:var(--muted)}.small{font-size:13px}
+.progress-wrap{height:6px;background:#edf1ee;border-radius:10px;margin:24px 0 26px;overflow:hidden}.progress{height:100%;width:0;background:var(--accent);transition:width .25s}
+.eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:750;margin-bottom:9px}
+.answers{display:grid;gap:10px;margin-top:22px}
+button.choice{width:100%;text-align:left;background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px 16px;color:var(--ink);font:inherit;cursor:pointer;transition:.15s}
+button.choice:hover,button.choice:focus{border-color:var(--accent);background:var(--soft);outline:2px solid transparent}
+button.primary{border:0;background:var(--accent);color:white;border-radius:13px;padding:13px 20px;font:700 15px inherit;cursor:pointer;text-decoration:none;display:inline-block}
+button.primary:hover{filter:brightness(1.08)}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+button.back{border:1px solid var(--line);background:white;color:var(--ink);border-radius:13px;padding:12px 17px;font:600 14px inherit;cursor:pointer}
+.note{background:#f5f8f5;border-left:3px solid var(--accent);padding:12px 14px;border-radius:8px;color:#52635b;font-size:13px;margin-top:20px}
+footer{text-align:center;color:var(--muted);font-size:12px;margin:16px 0}
+.result-icon{font-size:38px;margin-bottom:10px}.hidden{display:none!important}
+a.primary{background:var(--accent);color:#fff;border-radius:13px;padding:13px 20px;font-weight:700;text-decoration:none}
+</style>
+</head>
+<body>
+<main>
+  <p class="brand">A community for genuine connection</p>
+  <section class="panel" aria-live="polite">
+    <div id="welcome">
+      <h1>Loners & Introverts</h1>
+      <p class="muted">A little check-in before you join us.</p>
+      <p>This community is for people who relate to introversion, experience loneliness or find making connections difficult — and who want a respectful place to talk, make friends and grow.</p>
+      <p>Answer honestly. There are no “cool” or “correct” answers. This is not a psychological test, and you don't need to prove that you're an introvert.</p>
+      <div class="note">Your answers stay in this browser. This page does not collect or send your responses anywhere.</div>
+      <div class="actions"><button class="primary" onclick="startQuiz()">Start the questions</button></div>
+    </div>
+    <div id="quiz" class="hidden">
+      <div class="eyebrow" id="stepLabel">Question 1</div>
+      <div class="progress-wrap"><div class="progress" id="progress"></div></div>
+      <h2 id="question"></h2>
+      <p class="muted" id="hint"></p>
+      <div class="answers" id="answers"></div>
+      <div class="actions"><button class="back" id="backBtn" onclick="goBack()">← Back</button></div>
+    </div>
+    <div id="eligible" class="hidden">
+      <div class="result-icon">🌿</div>
+      <h2>You may have found your people.</h2>
+      <p>Your answers suggest that this community could be a good fit for what you're looking for.</p>
+      <p>Come as you are. You can participate at your own pace, and you never have to share anything you're uncomfortable sharing.</p>
+      <div class="actions"><a class="primary" id="joinLink" href="#" target="_blank" rel="noopener">Join Loners & Introverts</a></div>
+      <p class="small muted" style="margin-top:16px">Please respect everyone's privacy and treat members with kindness.</p>
+    </div>
+    <div id="notfit" class="hidden">
+      <div class="result-icon">🤍</div>
+      <h2>Thank you for taking the time.</h2>
+      <p>Based on your answers, this particular community may not be the right fit for you at the moment.</p>
+      <p>We appreciate your interest. We ask everyone to respect the purpose of the group and the people who use it as a place to feel safe and understood.</p>
+    </div>
+  </section>
+  <footer>Loners & Introverts · A space to connect without pressure</footer>
+</main>
+<script>
+// ADMIN SETUP: Replace the value below with your WhatsApp group invite URL.
+const GROUP_INVITE_LINK = "https://chat.whatsapp.com/I4kv6Qg7AJBJaypPT35NqP?s=cl&p=a&iam=2";
+
+const questions = {
+ introvert: {
+  text:"Do you personally identify as an introvert — for example, do you usually prefer quieter settings or smaller, deeper conversations?",
+  hint:"Introversion is a personal preference, not a measure of confidence or how many friends you have.",
+  answers:[
+   ["Yes, that describes me","lonely"],
+   ["I'm not sure; I'm still figuring myself out","uncertain"],
+   ["No, I generally feel energised by lots of social interaction","notfit"]
+  ]
+ },
+ lonely:{
+  text:"Do you sometimes feel lonely or wish you had closer connections, even if you spend time around other people?",
+  hint:"There is no shame in feeling lonely. Choose what feels most true.",
+  answers:[
+   ["Yes, quite often","connection"],
+   ["Sometimes","connection"],
+   ["Not really","social"]
+  ]
+ },
+ uncertain:{
+  text:"When you've spent a lot of time socialising, how do you usually feel?",
+  hint:"People are different; think about what tends to happen for you.",
+  answers:[
+   ["I need quiet time alone to recharge","connection"],
+   ["It depends on the people and situation","connection"],
+   ["I usually want more social activity","social"]
+  ]
+ },
+ connection:{
+  text:"Do you want friendships or conversations but sometimes struggle to start them, keep them going, or feel comfortable around people?",
+  hint:"This can include overthinking what to say, feeling awkward, or not knowing how to approach someone.",
+  answers:[
+   ["Yes, that's a real struggle for me","purpose"],
+   ["Sometimes; I'd like to become more comfortable","purpose"],
+   ["No, I find connecting with people quite easy","social"]
+  ]
+ },
+ social:{
+  text:"Are you mainly looking for a place to meet people and chat casually, rather than support with loneliness or social connection challenges?",
+  hint:"This helps us understand what you're hoping to get from the group.",
+  answers:[
+   ["Yes, mainly casual networking or general chat","notfit"],
+   ["No, I relate to loneliness or connection difficulties too","purpose"]
+  ]
+ },
+ purpose:{
+  text:"What is your main reason for wanting to join?",
+  hint:"Choose the closest answer. You can have more than one reason, but select the strongest one.",
+  answers:[
+   ["To meet people who understand loneliness, introversion or social struggles","respect"],
+   ["To practise communicating and build genuine friendships","respect"],
+   ["I'm mostly curious to see what people in the group say","notfit"],
+   ["To observe, mock, judge or collect people's personal stories","notfit"]
+  ]
+ },
+ respect:{
+  text:"Can you agree to respect members, avoid mocking or judging them, protect their privacy, and let people participate at their own pace?",
+  hint:"Members may share vulnerable experiences. Respect and discretion matter.",
+  answers:[
+   ["Yes. I can respect those boundaries","eligible"],
+   ["No, I can't agree to that","notfit"]
+  ]
+ }
+};
+let current="introvert", history=[], step=0;
+const screens=["welcome","quiz","eligible","notfit"];
+function show(id){screens.forEach(s=>document.getElementById(s).classList.toggle("hidden",s!==id));}
+function startQuiz(){history=[];step=1;current="introvert";render();}
+function render(){
+ show("quiz");
+ const q=questions[current];
+ document.getElementById("stepLabel").textContent="Question "+step;
+ document.getElementById("progress").style.width=Math.min(100,step/6*100)+"%";
+ document.getElementById("question").textContent=q.text;
+ document.getElementById("hint").textContent=q.hint;
+ document.getElementById("answers").innerHTML="";
+ // Shuffle answer order on every render so the qualifying path is not always first.
+ const shuffled = [...q.answers];
+ for(let i=shuffled.length-1;i>0;i--){
+  const j=Math.floor(Math.random()*(i+1));
+  [shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]];
+ }
+ shuffled.forEach(([label,next])=>{
+  const b=document.createElement("button");b.className="choice";b.textContent=label;
+  b.onclick=()=>answer(next);document.getElementById("answers").appendChild(b);
+ });
+ document.getElementById("backBtn").style.visibility=history.length?"visible":"hidden";
+}
+function answer(next){
+ history.push({current,step});
+ if(next==="eligible"){finish(true);return;}
+ if(next==="notfit"){finish(false);return;}
+ current=next;step++;render();
+}
+function goBack(){if(!history.length)return;const prev=history.pop();current=prev.current;step=prev.step;render();}
+function finish(ok){
+ show(ok?"eligible":"notfit");
+ if(ok){
+  const a=document.getElementById("joinLink");
+  if(GROUP_INVITE_LINK.startsWith("https://") && GROUP_INVITE_LINK.includes("chat.whatsapp.com/")){
+   a.href=GROUP_INVITE_LINK;a.style.display="inline-block";
+  }else{
+   a.style.display="none";
+   const p=document.createElement("p");p.className="note";
+   p.textContent="The group administrator still needs to add the WhatsApp invitation link to this page before publishing it.";
+   document.getElementById("eligible").appendChild(p);
+  }
+ }
+}
+</script>
+</body>
+</html>
